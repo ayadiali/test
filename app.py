@@ -1,12 +1,14 @@
 import subprocess
 import sys
+import streamlit as st
 
 try:
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
 except subprocess.CalledProcessError as e:
     print(f"Error during pip install: {e}")
+    st.markdown(f"Error during pip install: {e}")
 
-import streamlit as st
+
 import random
 import pandas as pd
 import numpy as np 
