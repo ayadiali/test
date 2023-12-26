@@ -16,7 +16,7 @@ from sklearn.preprocessing import StandardScaler
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
-from IPython.display import YouTubeVideo
+# from IPython.display import YouTubeVideo
 
 # from ret import get_genre, get_id_from_info, audio_based, cos_sim 
 
