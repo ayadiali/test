@@ -1,14 +1,6 @@
 import subprocess
 import sys
 import streamlit as st
-
-# try:
-#     subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
-# except subprocess.CalledProcessError as e:
-#     print(f"Error during pip install: {e}")
-#     st.markdown(f"Error during pip install: {e}")
-
-
 import random
 import pandas as pd
 import numpy as np 
@@ -80,7 +72,7 @@ df_artist_song = df['artist_song'].values.tolist()
 
 # df_artist#.values.tolist()
 
-st.title("Music Retrieval Aystem")
+st.title("Music Retrieval System")
 
 def select_name(names):
     selected_name = st.selectbox(f"Select a query song", names)
@@ -97,7 +89,7 @@ if selected_artist_song:
 def select_function(func):
     selected_name = st.selectbox(f"Select a function", func)
     return selected_name
-functions = ['Early Fusion_(combinatoin of bert and ivec1024)']
+functions = ['Early Fusion_(combinatoin of bert and ivec1024)','Cosimilarity: audio-based retrieval system']
 selected_func = select_function(functions)
 
 if selected_func:
@@ -137,36 +129,65 @@ df_normalized = pd.concat([merged_df['id'], pd.DataFrame(normalized_features_ten
 #     st.markdown(f"Query song: {selected_song}")
 #     st.markdown(f"Artist of the query song: {selected_artist}")
     
+if selected_func == 'Early Fusion_(combinatoin of bert and ivec1024)':
+    query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
+    st.markdown(f"**Qzery song ID:** {query_id}")
+                # #     retrieve 10 tracks using combined_normalized data/featuers
+    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_normalized , N=10, sim_func=cos_sim)
+    query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
+    query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
 
-query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
-st.markdown(f"**Qzery song ID:** {query_id}")
-            # #     retrieve 10 tracks using combined_normalized data/featuers
-retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_normalized , N=10, sim_func=cos_sim)
-query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
-query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
+    st.markdown("**Query Ids-Urls:**")
+    query_id, query_url = query_url_norm[0], query_url_norm[1]
+    st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id}, -----> <span style='color: #008080;'>**URL:**</span> {query_url}",unsafe_allow_html=True)
 
-st.markdown("**Query Ids-Urls:**")
-query_id, query_url = query_url_norm[0], query_url_norm[1]
-st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id}, -----> <span style='color: #008080;'>**URL:**</span> {query_url}",unsafe_allow_html=True)
+    st.markdown("**Retrieved Ids-Urls:**")
+    for  item in (ret_url_norm):
+        ret_id, ret_url = item[0], item[1]
+        st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url}",unsafe_allow_html=True)
 
-st.markdown("**Retrieved Ids-Urls:**")
-for  item in (ret_url_norm):
-    ret_id, ret_url = item[0], item[1]
-    st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url}",unsafe_allow_html=True)
+        # st.markdown(f"retrieved Urls: {ret_url_norm}")
 
-    # st.markdown(f"retrieved Urls: {ret_url_norm}")
-
-st.markdown("**The Youtube video of the query song:**")
-st.video(query_url_norm[1])
+    st.markdown("**The Youtube video of the query song:**")
+    st.video(query_url_norm[1])
 
 
-    # selecting a song to play
-st.markdown("**Select a video to play from the retrieved songs**")
-ids, urls = zip(*ret_url_norm) 
-ret_artists_df = df[df['id'].isin(list(ids))]['artist']#.tolist()
-ret_songs_df = df[df['id'].isin(list(ids))]['song']#.tolist()+
-artist_song_ret = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df, ret_songs_df)]})
+        # selecting a song to play
+    st.markdown("**Select a video to play from the retrieved songs**")
+    ids, urls = zip(*ret_url_norm) 
+    ret_artists_df = df[df['id'].isin(list(ids))]['artist']#.tolist()
+    ret_songs_df = df[df['id'].isin(list(ids))]['song']#.tolist()+
+    artist_song_ret = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df, ret_songs_df)]})
 
+if selected_func == 'Cosimilarity: audio-based retrieval system':
+    query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
+    st.markdown(f"**Qzery song ID:** {query_id}")
+                # #     retrieve 10 tracks using combined_normalized data/featuers
+    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_ivec1024 , N=10, sim_func=cos_sim)
+    query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
+    query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
+
+    st.markdown("**Query Ids-Urls:**")
+    query_id, query_url = query_url_norm[0], query_url_norm[1]
+    st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id}, -----> <span style='color: #008080;'>**URL:**</span> {query_url}",unsafe_allow_html=True)
+
+    st.markdown("**Retrieved Ids-Urls:**")
+    for  item in (ret_url_norm):
+        ret_id, ret_url = item[0], item[1]
+        st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url}",unsafe_allow_html=True)
+
+        # st.markdown(f"retrieved Urls: {ret_url_norm}")
+
+    st.markdown("**The Youtube video of the query song:**")
+    st.video(query_url_norm[1])
+
+
+        # selecting a song to play
+    st.markdown("**Select a video to play from the retrieved songs**")
+    ids, urls = zip(*ret_url_norm) 
+    ret_artists_df = df[df['id'].isin(list(ids))]['artist']#.tolist()
+    ret_songs_df = df[df['id'].isin(list(ids))]['song']#.tolist()+
+    artist_song_ret = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df, ret_songs_df)]})    
 
 
 ret_df_artist_song = artist_song_ret.values.tolist()
@@ -188,4 +209,6 @@ if selected_artist_song_:
     st.markdown("**Retrieved genres:**")
     for  track,ret_genre in (zip(ret_df_artist_song,retrieved_genre)):
         st.markdown(f"- <span style='color: #008080;'>**Retrieved track:**</span> {track[0]} -----> **<span style='color: #008080;'>Genre:**</span>{ret_genre}", unsafe_allow_html=True)
+    
+
     
