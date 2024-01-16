@@ -100,7 +100,7 @@ if selected_func:
 df_bert = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_lyrics_bert_mmsr.tsv", delimiter='\t')
 # audio_data
 df_ivec1024 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec1024_mmsr.tsv", delimiter='\t')
-df_ivec_256 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec256_mmsr.tsv", delimiter='\t'
+df_ivec_256 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec256_mmsr.tsv", delimiter='\t')
 
 # url info
 url_df = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_url_mmsr.tsv", delimiter='\t')
