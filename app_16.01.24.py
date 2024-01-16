@@ -89,7 +89,7 @@ if selected_artist_song:
 def select_function(func):
     selected_name = st.selectbox(f"Select a function", func)
     return selected_name
-functions = ['Early Fusion_(combinatoin of bert and ivec256)','Cosimilarity: audio-based retrieval system']
+functions = ['Early Fusion_(combinatoin of bert and ivec1024)','Cosimilarity: audio-based retrieval system']
 selected_func = select_function(functions)
 
 if selected_func:
@@ -100,7 +100,6 @@ if selected_func:
 df_bert = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_lyrics_bert_mmsr.tsv", delimiter='\t')
 # audio_data
 df_ivec1024 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec1024_mmsr.tsv", delimiter='\t')
-df_ivec_256 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec256_mmsr.tsv", delimiter='\t')
 
 # url info
 url_df = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_url_mmsr.tsv", delimiter='\t')
@@ -164,7 +163,7 @@ if selected_func == 'Cosimilarity: audio-based retrieval system':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
     st.markdown(f"**Qzery song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
-    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_ivec256 , N=10, sim_func=cos_sim)
+    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_ivec1024 , N=10, sim_func=cos_sim)
     query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
     query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
 
