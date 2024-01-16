@@ -89,7 +89,7 @@ if selected_artist_song:
 def select_function(func):
     selected_name = st.selectbox(f"Select a function", func)
     return selected_name
-functions = ['Early Fusion_(combinatoin of bert and ivec1024)','Cosimilarity: audio-based retrieval system']
+functions = ['Early Fusion_(combinatoin of bert and ivec256)','Cosimilarity: audio-based retrieval system']
 selected_func = select_function(functions)
 
 if selected_func:
