@@ -111,7 +111,7 @@ genre =  pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/ma
 ### Data preparation
 
 # Merge 2 feature DataFrames based on the 'id' column
-merged_df = pd.merge(df_bert, df_ivec1024, on='id', how='inner')
+merged_df = pd.merge(df_bert, df_ivec256, on='id', how='inner')
 
 # data preprocessing
 scaler = StandardScaler()
@@ -130,7 +130,7 @@ df_normalized = pd.concat([merged_df['id'], pd.DataFrame(normalized_features_ten
 #     st.markdown(f"Query song: {selected_song}")
 #     st.markdown(f"Artist of the query song: {selected_artist}")
     
-if selected_func == 'Early Fusion_(combinatoin of bert and ivec1024)':
+if selected_func == 'Early Fusion_(combinatoin of bert and ivec256)':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
     st.markdown(f"**Qzery song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
