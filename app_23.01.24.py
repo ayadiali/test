@@ -143,8 +143,7 @@ if selected_func == 'Early Fusion_(combinatoin of bert and musicnn)':
     ret_songs_df = df[df['id'].isin(list(ids))]['song']#.tolist()+
     artist_song_ret = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df, ret_songs_df)]})
     
-    ret_df_artist_song = artist_song_ret.values.tolist()
-    selected_artist_song_ = st.selectbox("Select a retrieved track", artist_song_ret)
+    
     
 
 if selected_func == 'Cosimilarity: audio-based retrieval system':
@@ -176,12 +175,12 @@ if selected_func == 'Cosimilarity: audio-based retrieval system':
     ret_artists_df_ = df[df['id'].isin(list(ids))]['artist']#.tolist()
     ret_songs_df_ = df[df['id'].isin(list(ids))]['song']#.tolist()+
     artist_song_ret_ = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df_, ret_songs_df_)]})    
-    ret_df_artist_song_ = artist_song_ret_.values.tolist()
-    selected_artist_song_2 = st.selectbox("Select a retrieved track", artist_song_ret_)  
+     
     
 
             
-            
+ret_df_artist_song = artist_song_ret.values.tolist()
+selected_artist_song_ = st.selectbox("Select a retrieved track", artist_song_ret)           
 if selected_artist_song_:
     ret_selected_artist, ret_selected_song = selected_artist_song_.split(' - ')
     st.success(f"Retrieved Song-Retrieved Artist: {ret_selected_song}-{ret_selected_artist}")
@@ -199,6 +198,8 @@ if selected_artist_song_:
     for  track,ret_genre in (zip(ret_df_artist_song,retrieved_genre)):
         st.markdown(f"- <span style='color: #008080;'>**Retrieved track:**</span> {track[0]} -----> **<span style='color: #008080;'>Genre:**</span>{ret_genre}", unsafe_allow_html=True)
 
+ret_df_artist_song_ = artist_song_ret_.values.tolist()
+selected_artist_song_2 = st.selectbox("Select a retrieved track", artist_song_ret_) 
 if selected_artist_song_2:
     ret_selected_artist_, ret_selected_song_ = selected_artist_song_2.split(' - ')
     st.success(f"Retrieved Song-Retrieved Artist: {ret_selected_song_}-{ret_selected_artist_}")
