@@ -121,14 +121,15 @@ normalized_features_tensor = torch.from_numpy(normalized_features) # transform n
 # df_normalized(normalized_features)
 df_normalized = pd.concat([merged_df['id'], pd.DataFrame(normalized_features_tensor)], axis=1)
 
-    
+   
 if selected_func == 'Early Fusion_(combinatoin of bert and musicnn)':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
     st.markdown(f"**Query song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
     retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_normalized , N=10, sim_func=cos_sim)
     query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
-    query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
+#     query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
+    query_genre, retrieved_genre = get_genre(id=query_id,genres_df=genre),[get_genre(id=ret_id,genres_df=genre) for ret_id in retrieved_ids_norm]
     
     st.markdown("**Query Ids-Urls:**")
     query_id, query_url = query_url_norm[0], query_url_norm[1]
