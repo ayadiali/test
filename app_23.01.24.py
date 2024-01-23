@@ -195,7 +195,7 @@ if selected_artist_song_:
     
     # genres
     st.markdown("**Query genres:**")
-    query_genre = query_genre#, query_genre[1]
+#     query_genre = query_genre#, query_genre[1]
     st.markdown(f"- <span style='color: #008080;'>**Genre:**</span> {query_genre}", unsafe_allow_html=True)
 
     st.markdown("**Retrieved genres:**")
