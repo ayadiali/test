@@ -124,7 +124,7 @@ df_normalized = pd.concat([merged_df['id'], pd.DataFrame(normalized_features_ten
     
 if selected_func == 'Early Fusion_(combinatoin of bert and musicnn)':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
-    st.markdown(f"**Qzery song ID:** {query_id}")
+    st.markdown(f"**Query song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
     retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_normalized , N=10, sim_func=cos_sim)
     query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
