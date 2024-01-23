@@ -89,7 +89,7 @@ if selected_artist_song:
 def select_function(func):
     selected_name = st.selectbox(f"Select a function", func)
     return selected_name
-functions = ['Early Fusion_(combinatoin of bert and ivec256)','Cosimilarity: audio-based retrieval system']
+functions = ['Early Fusion_(combinatoin of bert and musicnn)','Cosimilarity: audio-based retrieval system']
 selected_func = select_function(functions)
 
 if selected_func:
@@ -121,16 +121,23 @@ normalized_features_tensor = torch.from_numpy(normalized_features) # transform n
 # df_normalized(normalized_features)
 df_normalized = pd.concat([merged_df['id'], pd.DataFrame(normalized_features_tensor)], axis=1)
 
-
     
 if selected_func == 'Early Fusion_(combinatoin of bert and musicnn)':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
-    st.markdown(f"**Query song ID:** {query_id}")
+    st.markdown(f"**Qzery song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
     retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_normalized , N=10, sim_func=cos_sim)
     query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
     query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
+    
+    st.markdown("**Query Ids-Urls:**")
+    query_id, query_url = query_url_norm[0], query_url_norm[1]
+    st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id}, -----> <span style='color: #008080;'>**URL:**</span> {query_url}",unsafe_allow_html=True)
 
+    st.markdown("**Retrieved Ids-Urls:**")
+    for  item in (ret_url_norm):
+        ret_id, ret_url = item[0], item[1]
+        st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url}",unsafe_allow_html=True)
 
     st.markdown("**The Youtube video of the query song:**")
     st.video(query_url_norm[1])
@@ -142,84 +149,54 @@ if selected_func == 'Early Fusion_(combinatoin of bert and musicnn)':
     ret_artists_df = df[df['id'].isin(list(ids))]['artist']#.tolist()
     ret_songs_df = df[df['id'].isin(list(ids))]['song']#.tolist()+
     artist_song_ret = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df, ret_songs_df)]})
-    
-    if st.button("Submit"):
-        on_submit()
-    
-    
-    
 
 if selected_func == 'Cosimilarity: audio-based retrieval system':
-    query_id_ = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
-    st.markdown(f"**Qzery song ID:** {query_id}")
+    query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
+    st.markdown(f"**Query song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
-    retrieved_ids_norm_ = audio_based(id=query_id_, dfrepr=df_musicnn , N=10, sim_func=cos_sim)
-    query_url_norm_, ret_url_norm_ = id_and_url_or_genre(query_id=query_id_,retrieved_ids=retrieved_ids_norm_,df=url_df,func=url)
-    query_genre_, retrieved_genre_ = id_and_url_or_genre(query_id=query_id_,retrieved_ids=retrieved_ids_norm_,df=genre,func=get_genre)
+    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_musicnn , N=10, sim_func=cos_sim)
+    query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
+    query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
 
     st.markdown("**Query Ids-Urls:**")
-    query_id_, query_url_ = query_url_norm_[0], query_url_norm_[1]
-    st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id_}, -----> <span style='color: #008080;'>**URL:**</span> {query_url_}",unsafe_allow_html=True)
+    query_id, query_url = query_url_norm[0], query_url_norm[1]
+    st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id}, -----> <span style='color: #008080;'>**URL:**</span> {query_url}",unsafe_allow_html=True)
 
     st.markdown("**Retrieved Ids-Urls:**")
-    for  item in (ret_url_norm_):
-        ret_id_, ret_url_ = item[0], item[1]
-        st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id_}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url_}",unsafe_allow_html=True)
+    for  item in (ret_url_norm):
+        ret_id, ret_url = item[0], item[1]
+        st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url}",unsafe_allow_html=True)
 
         # st.markdown(f"retrieved Urls: {ret_url_norm}")
 
     st.markdown("**The Youtube video of the query song:**")
-    st.video(query_url_norm_[1])
+    st.video(query_url_norm[1])
 
 
         # selecting a song to play
     st.markdown("**Select a video to play from the retrieved songs**")
-    ids_, urls_ = zip(*ret_url_norm_) 
-    ret_artists_df_ = df[df['id'].isin(list(ids))]['artist']#.tolist()
-    ret_songs_df_ = df[df['id'].isin(list(ids))]['song']#.tolist()+
-    artist_song_ret_ = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df_, ret_songs_df_)]})    
+    ids, urls = zip(*ret_url_norm) 
+    ret_artists_df = df[df['id'].isin(list(ids))]['artist']#.tolist()
+    ret_songs_df = df[df['id'].isin(list(ids))]['song']#.tolist()+
+    artist_song_ret = pd.DataFrame({'Combined': [f"{artist} - {song}" for artist, song in zip(ret_artists_df, ret_songs_df)]})    
+
+
+ret_df_artist_song = artist_song_ret.values.tolist()
+# selected_artist_song_ = select_name(artist_song_ret)
+selected_artist_song_ = st.selectbox("Select a retrieved track", artist_song_ret)
+if selected_artist_song_:
+    ret_selected_artist, ret_selected_song = selected_artist_song_.split(' - ')
+    st.success(f"Retrieved Song-Retrieved Artist: {ret_selected_song}-{ret_selected_artist}")
+    selected_ret_id = get_id_from_info(ret_selected_song, ret_selected_artist, df)
+    selected_ret_url = list(urls)[list(ids).index(selected_ret_id)]
+    st.markdown("**The Youtube video of the retrieved song :**")
+    st.video(selected_ret_url)
     
-    if st.button("Submit"):
-        on_submit2()
-     
-    
+    # genres
+    st.markdown("**Query genres:**")
+    query_genre = query_genre#, query_genre[1]
+    st.markdown(f"- <span style='color: #008080;'>**Genre:**</span> {query_genre}", unsafe_allow_html=True)
 
-def on_submit():            
-    ret_df_artist_song = artist_song_ret.values.tolist()
-    selected_artist_song_ = st.selectbox("Select a retrieved track", artist_song_ret)           
-    if selected_artist_song_:
-        ret_selected_artist, ret_selected_song = selected_artist_song_.split(' - ')
-        st.success(f"Retrieved Song-Retrieved Artist: {ret_selected_song}-{ret_selected_artist}")
-        selected_ret_id = get_id_from_info(ret_selected_song, ret_selected_artist, df)
-        selected_ret_url = list(urls)[list(ids).index(selected_ret_id)]
-        st.markdown("**The Youtube video of the retrieved song :**")
-        st.video(selected_ret_url)
-
-        # genres
-        st.markdown("**Query genres:**")
-        query_genre = query_genre#, query_genre[1]
-        st.markdown(f"- <span style='color: #008080;'>**Genre:**</span> {query_genre}", unsafe_allow_html=True)
-
-        st.markdown("**Retrieved genres:**")
-        for  track,ret_genre in (zip(ret_df_artist_song,retrieved_genre)):
-            st.markdown(f"- <span style='color: #008080;'>**Retrieved track:**</span> {track[0]} -----> **<span style='color: #008080;'>Genre:**</span>{ret_genre}", unsafe_allow_html=True)
-
-def on_submit2():            
-    ret_df_artist_song_ = artist_song_ret_.values.tolist()
-    selected_artist_song_2 = st.selectbox("Select a retrieved track", artist_song_ret_) 
-    if selected_artist_song_2:
-        ret_selected_artist_, ret_selected_song_ = selected_artist_song_2.split(' - ')
-        st.success(f"Retrieved Song-Retrieved Artist: {ret_selected_song_}-{ret_selected_artist_}")
-        selected_ret_id_ = get_id_from_info(ret_selected_song_, ret_selected_artist_, df)
-        selected_ret_url_ = list(urls_)[list(ids_).index(selected_ret_id_)]
-        st.markdown("**The Youtube video of the retrieved song :**")
-        st.video(selected_ret_url_)
-
-        # genres
-        st.markdown("**Query genres:**")
-        query_genre = query_genre_#, query_genre[1]
-        st.markdown(f"- <span style='color: #008080;'>**Genre:**</span> {query_genre_}", unsafe_allow_html=True)
-
-        st.markdown("**Retrieved genres:**")
-        for  track,ret_genre in (zip(ret_df_artist_song_,retrieved_genre_)):
-            st.markdown(f"- <span style='color: #008080;'>**Retrieved track:**</span> {track[0]} -----> **<span style='color: #008080;'>Genre:**</span>{ret_genre}", unsafe_allow_html=True)
+    st.markdown("**Retrieved genres:**")
+    for  track,ret_genre in (zip(ret_df_artist_song,retrieved_genre)):
+        st.markdown(f"- <span style='color: #008080;'>**Retrieved track:**</span> {track[0]} -----> **<span style='color: #008080;'>Genre:**</span>{ret_genre}", unsafe_allow_html=True)
