@@ -89,7 +89,7 @@ if selected_artist_song:
 def select_function(func):
     selected_name = st.selectbox(f"Select a function", func)
     return selected_name
-functions = ['Early Fusion_(combinatoin of bert and ivec256)','Cosimilarity: audio-based retrieval system']
+functions = ['Early Fusion_(combinatoin of bert and musicnn)','Cosimilarity: audio-based retrieval system']
 selected_func = select_function(functions)
 
 if selected_func:
@@ -99,8 +99,9 @@ if selected_func:
 # text data
 df_bert = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_lyrics_bert_mmsr.tsv", delimiter='\t')
 # audio_data
-df_ivec1024 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec1024_mmsr.tsv", delimiter='\t')
-df_ivec256 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec256_mmsr.tsv", delimiter='\t')
+# df_ivec1024 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec1024_mmsr.tsv", delimiter='\t')
+# df_ivec256 = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_ivec256_mmsr.tsv", delimiter='\t')
+df_musicnn = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_musicnn_mmsr.tsv", delimiter='\t')
 
 # url info
 url_df = pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/main/id_url_mmsr.tsv", delimiter='\t')
@@ -111,7 +112,7 @@ genre =  pd.read_csv("https://media.githubusercontent.com/media/ayadiali/test/ma
 ### Data preparation
 
 # Merge 2 feature DataFrames based on the 'id' column
-merged_df = pd.merge(df_bert, df_ivec256, on='id', how='inner')
+merged_df = pd.merge(df_bert, df_musicnn, on='id', how='inner')
 
 # data preprocessing
 scaler = StandardScaler()
@@ -120,34 +121,14 @@ normalized_features_tensor = torch.from_numpy(normalized_features) # transform n
 # df_normalized(normalized_features)
 df_normalized = pd.concat([merged_df['id'], pd.DataFrame(normalized_features_tensor)], axis=1)
 
-
-
-# if st.button("Play"): 
-#     st.text("retrieved YouTube video:")
-#     st.video(self.selected_ret_url)
-            
-# if st.button("Submit"):
-#     st.markdown(f"Query song: {selected_song}")
-#     st.markdown(f"Artist of the query song: {selected_artist}")
     
-if selected_func == 'Early Fusion_(combinatoin of bert and ivec256)':
+if selected_func == 'Early Fusion_(combinatoin of bert and musicnn)':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
-    st.markdown(f"**Qzery song ID:** {query_id}")
+    st.markdown(f"**Query song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
     retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_normalized , N=10, sim_func=cos_sim)
     query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
     query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
-
-#     st.markdown("**Query Ids-Urls:**")
-#     query_id, query_url = query_url_norm[0], query_url_norm[1]
-#     st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {query_id}, -----> <span style='color: #008080;'>**URL:**</span> {query_url}",unsafe_allow_html=True)
-
-#     st.markdown("**Retrieved Ids-Urls:**")
-#     for  item in (ret_url_norm):
-#         ret_id, ret_url = item[0], item[1]
-#         st.markdown(f"- <span style='color: #008080;'>**ID:**</span> {ret_id}, -----> <span style='color: #008080;'>**URL:**</span> {ret_url}",unsafe_allow_html=True)
-
-        # st.markdown(f"retrieved Urls: {ret_url_norm}")
 
     st.markdown("**The Youtube video of the query song:**")
     st.video(query_url_norm[1])
@@ -162,9 +143,9 @@ if selected_func == 'Early Fusion_(combinatoin of bert and ivec256)':
 
 if selected_func == 'Cosimilarity: audio-based retrieval system':
     query_id = get_id_from_info(song=selected_song, artist=selected_artist, info=df)
-    st.markdown(f"**Qzery song ID:** {query_id}")
+    st.markdown(f"**Query song ID:** {query_id}")
                 # #     retrieve 10 tracks using combined_normalized data/featuers
-    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_ivec256 , N=10, sim_func=cos_sim)
+    retrieved_ids_norm = audio_based(id=query_id, dfrepr=df_musicnn , N=10, sim_func=cos_sim)
     query_url_norm, ret_url_norm = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=url_df,func=url)
     query_genre, retrieved_genre = id_and_url_or_genre(query_id=query_id,retrieved_ids=retrieved_ids_norm,df=genre,func=get_genre)
 
@@ -210,4 +191,5 @@ if selected_artist_song_:
     st.markdown("**Retrieved genres:**")
     for  track,ret_genre in (zip(ret_df_artist_song,retrieved_genre)):
         st.markdown(f"- <span style='color: #008080;'>**Retrieved track:**</span> {track[0]} -----> **<span style='color: #008080;'>Genre:**</span>{ret_genre}", unsafe_allow_html=True)
+
     
